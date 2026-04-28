@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" id="html-tag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Insights | Football Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Lexend:wght@300;500;700&family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent: #2ecc71;
+            --accent-glow: rgba(46, 204, 113, 0.2);
+            --text: #ffffff;
+            --text-dim: #88888e;
+            --input-bg: #16161a;
+            --error: #ff4d4d;
+        }
+
+        [dir="rtl"] { font-family: 'Almarai', sans-serif; }
+        [dir="rtl"] .logo { letter-spacing: 0; font-weight: 800; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #0a0a0c 100%);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .lang-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 14px;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        [dir="rtl"] .lang-toggle { right: auto; left: 30px; }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 620px; /* Increased width */
+            padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-family: 'Lexend', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .hero-text { text-align: center; margin-bottom: 40px; }
+        .hero-text h1 { font-family: 'Lexend', sans-serif; font-size: 40px; font-weight: 500; margin: 0; letter-spacing: -1.5px; }
+        .hero-text p { color: var(--text-dim); font-size: 16px; margin-top: 12px; font-weight: 300; }
+
+        .search-container {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 40px;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        .input-pair { display: flex; flex-direction: column; gap: 32px; margin-bottom: 40px; } /* Increased gap */
+        .field-label { font-size: 10px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
+        
+        .team-box { 
+            display: grid; 
+            grid-template-columns: 1fr 210px; /* Adjusted columns for wide league names */
+            gap: 16px; 
+        }
+
+        input, select {
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 18px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box; /* Crucial for spacing */
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+            background: #1c1c21;
+        }
+
+        .btn-analyze {
+            width: 100%;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 18px;
+            padding: 22px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-analyze:hover { transform: translateY(-3px); box-shadow: 0 15px 30px -5px var(--accent-glow); }
+        
+        .error-card {
+            background: rgba(255, 77, 77, 0.08);
+            border: 1px solid rgba(255, 77, 77, 0.2);
+            color: var(--error);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        #loader { display: none; text-align: center; margin-top: 24px; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+
+        @media (max-width: 580px) {
+            .team-box { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <button class="lang-toggle" onclick="toggleLang()" id="lang-btn">العربية</button>
+
+    <div class="main-wrapper">
+        <div class="logo" id="txt-logo">Core Analytics</div>
+        
+        <div class="hero-text">
+            <h1 id="txt-title">Advanced Simulation</h1>
+            <p id="txt-subtitle">Professional grade modeling for match outcomes.</p>
+        </div>
+
+        <div class="search-container">
+            <div id="error-box" class="error-card" style="display: {% if error_code or error %}block{% else %}none{% endif %};">
+                <span id="txt-error-msg">
+                    {% if error_code == 'NOT_FOUND' %}Team '{{ error_team }}' not found.{% elif error_code == 'RATE_LIMIT' %}Limit hit. Wait 60s.{% else %}{{ error }}{% endif %}
+                </span>
+            </div>
+
+            <form action="/analyze" method="POST" onsubmit="showLoader()">
+                <div class="input-pair">
+                    <div>
+                        <span class="field-label" id="txt-home-label">Home Side</span>
+                        <div class="team-box">
+                            <input type="text" name="team_a" placeholder="Arsenal" required>
+                            <select name="league_a" class="league-select">
+                                <option value="PL">Premier League</option>
+                                <option value="PD">La Liga</option>
+                                <option value="BL1">Bundesliga</option>
+                                <option value="SA">Serie A</option>
+                                <option value="FL1">Ligue 1</option>
+                                <option value="DED">Eredivisie</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="field-label" id="txt-away-label">Away Side</span>
+                        <div class="team-box">
+                            <input type="text" name="team_b" placeholder="Liverpool" required>
+                            <select name="league_b" class="league-select">
+                                <option value="PL">Premier League</option>
+                                <option value="PD">La Liga</option>
+                                <option value="BL1">Bundesliga</option>
+                                <option value="SA">Serie A</option>
+                                <option value="FL1">Ligue 1</option>
+                                <option value="DED">Eredivisie</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="lang" id="lang-input" value="{{ lang or 'en' }}">
+                <button type="submit" class="btn-analyze" id="txt-btn">Generate Insight</button>
+            </form>
+            <div id="loader" id="txt-loader">Processing match variables...</div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                logo: "Core Analytics", title: "Advanced Simulation", subtitle: "Professional grade modeling for match outcomes.",
+                home: "Home Side", away: "Away Side", btn: "Generate Insight", loader: "Processing match variables...",
+                toggle: "العربية", err_not_found: "Team '{team}' not found.",
+                leagues: { PL: "Premier League", PD: "La Liga", BL1: "Bundesliga", SA: "Serie A", FL1: "Ligue 1", DED: "Eredivisie" }
+            },
+            ar: {
+                logo: "التحليلات الجوهرية", title: "محاكاة متقدمة", subtitle: "نمذجة احترافية لنتائج المباريات القادمة.",
+                home: "صاحب الأرض", away: "الفريق الضيف", btn: "توليد التوقعات", loader: "جاري معالجة المتغيرات...",
+                toggle: "English", err_not_found: "لم يتم العثور على '{team}'.",
+                leagues: { PL: "الدوري الإنجليزي", PD: "الدوري الإسباني", BL1: "الدوري الألماني", SA: "الدوري الإيطالي", FL1: "الدوري الفرنسي", DED: "الدوري الهولندي" }
+            }
+        };
+
+        let currentLang = "{{ lang or 'en' }}";
+
+        function updateUI(lang) {
+            const data = translations[lang];
+            const html = document.getElementById('html-tag');
+            html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            html.setAttribute('lang', lang);
+
+            document.getElementById('txt-logo').innerText = data.logo;
+            document.getElementById('txt-title').innerText = data.title;
+            document.getElementById('txt-subtitle').innerText = data.subtitle;
+            document.getElementById('txt-home-label').innerText = data.home;
+            document.getElementById('txt-away-label').innerText = data.away;
+            document.getElementById('txt-btn').innerText = data.btn;
+            document.getElementById('lang-btn').innerText = data.toggle;
+            document.getElementById('lang-input').value = lang;
+
+            document.querySelectorAll('.league-select').forEach(select => {
+                Array.from(select.options).forEach(opt => {
+                    if (data.leagues[opt.value]) opt.text = data.leagues[opt.value];
+                });
+            });
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            updateUI(currentLang);
+        }
+
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+            if(currentLang === 'ar') document.getElementById('loader').innerText = translations.ar.loader;
+        }
+
+        if(currentLang === 'ar') updateUI('ar');
+    </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" id="html-tag" dir="{% if lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report: {{ team_a.team_name }} vs {{ team_b.team_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Lexend:wght@300;500;700&family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent: #2ecc71;
+            --accent-glow: rgba(46, 204, 113, 0.1);
+            --text: #ffffff;
+            --text-dim: #88888e;
+            --win: #2ecc71;
+            --loss: #ff4d4d;
+            --draw: #555;
+        }
+
+        /* Base Typography */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #0a0a0c 100%);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Arabic Typography Overrides */
+        [dir="rtl"] { font-family: 'Almarai', sans-serif; }
+        [dir="rtl"] .header h1 { letter-spacing: 0; }
+        [dir="rtl"] .label, [dir="rtl"] th, [dir="rtl"] .confidence { letter-spacing: 0 !important; font-family: 'Almarai', sans-serif; }
+        [dir="rtl"] .back-nav { font-weight: 700; letter-spacing: 0; }
+        [dir="rtl"] .bet-value { letter-spacing: 0; font-family: 'Almarai', sans-serif; font-weight: 800; }
+
+        .lang-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 14px;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+        [dir="rtl"] .lang-toggle { right: auto; left: 30px; }
+
+        .container { width: 100%; max-width: 1000px; animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header { text-align: center; margin-bottom: 60px; }
+        .header h1 { font-family: 'Lexend', sans-serif; font-size: 42px; font-weight: 500; margin: 0; letter-spacing: -2px; }
+        .header .vs { color: var(--accent); font-size: 20px; margin: 0 15px; font-weight: 800; }
+
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .team-panel { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 32px; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .team-panel h2 { font-family: 'Lexend', sans-serif; font-size: 26px; margin-top: 0; margin-bottom: 24px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; color: var(--accent); font-weight: 600; }
+
+        .metric-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .metric-item .label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1.5px; margin-bottom: 6px; display: block; }
+        .metric-item .value { font-size: 26px; font-weight: 700; font-family: 'Lexend', sans-serif; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; color: var(--text-dim); text-transform: uppercase; font-size: 10px; padding: 12px 0; border-bottom: 1px solid var(--glass-border); font-weight: 800; letter-spacing: 1px; }
+        [dir="rtl"] th { text-align: right; }
+        td { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
+
+        .res-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 12px; }
+        [dir="rtl"] .res-indicator { margin-right: 0; margin-left: 12px; }
+
+        .res-W { background: var(--win); box-shadow: 0 0 12px var(--win); }
+        .res-L { background: var(--loss); box-shadow: 0 0 12px var(--loss); }
+        .res-D { background: var(--draw); }
+
+        .score-box { font-family: 'Lexend', sans-serif; font-weight: 700; letter-spacing: 1px; direction: ltr; display: inline-block; color: #fff; }
+
+        .prediction-card {
+            background: var(--glass);
+            border: 2px solid var(--accent);
+            border-radius: 36px;
+            padding: 50px;
+            text-align: center;
+            margin-top: 40px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), inset 0 0 40px var(--accent-glow);
+        }
+
+        .prediction-card .label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 24px; display: block; color: var(--text-dim); }
+        .prediction-card .bet-value { font-family: 'Lexend', sans-serif; font-size: 58px; font-weight: 700; margin: 0; letter-spacing: -2px; color: #fff; text-shadow: 0 0 25px var(--accent-glow); }
+        .prediction-card .confidence { margin-top: 24px; font-weight: 800; font-size: 17px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+
+        .back-nav { display: block; text-align: center; margin-top: 50px; color: var(--text-dim); text-decoration: none; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s; }
+        .back-nav:hover { color: var(--accent); }
+
+        @media (max-width: 800px) { .summary-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <button class="lang-toggle" onclick="togglePageLang()" id="lang-btn">{% if lang == 'en' %}العربية{% else %}English{% endif %}</button>
+
+    {% set t = {
+        'goals': 'Avg Goals' if lang == 'en' else 'معدل الأهداف',
+        'win': 'Win Prob' if lang == 'en' else 'احتمال الفوز',
+        'clean': 'Clean Sheets' if lang == 'en' else 'شباك نظيفة',
+        'btts': 'BTTS Rate' if lang == 'en' else 'كلا الفريقين سجل',
+        'opponent': 'Vs Opponent' if lang == 'en' else 'ضد الخصم',
+        'score': 'Score' if lang == 'en' else 'النتيجة',
+        'insight': 'Algorithmic Insight' if lang == 'en' else 'رؤية خوارزمية',
+        'back': '← Back to Simulation Engine' if lang == 'en' else '← العودة إلى محرك المحاكاة',
+        'prob': 'Probability Score' if lang == 'en' else 'درجة الاحتمالية',
+        'neutral': 'Market Neutral' if lang == 'en' else 'سوق محايد',
+        'variance': 'Statistical variance too high for prediction.' if lang == 'en' else 'التباين الإحصائي مرتفع للغاية للتنبؤ.',
+        'Over 2.5 Goals': 'Over 2.5 Goals' if lang == 'en' else 'أكثر من 2.5 هدف',
+        'Under 2.5 Goals': 'Under 2.5 Goals' if lang == 'en' else 'أقل من 2.5 هدف',
+        'BTTS - Yes': 'BTTS - Yes' if lang == 'en' else 'كلا الفريقين سجل - نعم',
+        'Win': 'Win' if lang == 'en' else 'فوز'
+    } %}
+
+    <div class="container">
+        <div class="header">
+            <h1>{{ team_a.team_name }}<span class="vs">/</span>{{ team_b.team_name }}</h1>
+        </div>
+
+        <div class="summary-grid">
+            <div class="team-panel">
+                <h2>{{ team_a.team_name }}</h2>
+                <div class="metric-list">
+                    <div class="metric-item"><span class="label">{{ t.goals }}</span><span class="value">{{ analysis.team_a_stats.avg_scored }}</span></div>
+                    <div class="metric-item"><span class="label">{{ t.win }}</span><span class="value">{{ analysis.team_a_stats.win_rate }}%</span></div>
+                    <div class="metric-item"><span class="label">{{ t.clean }}</span><span class="value">{{ analysis.team_a_stats.clean_sheet_rate }}%</span></div>
+                    <div class="metric-item"><span class="label">{{ t.btts }}</span><span class="value">{{ analysis.team_a_stats.btts_prob }}%</span></div>
+                </div>
+                <table>
+                    <thead><tr><th>{{ t.opponent }}</th><th>{{ t.score }}</th></tr></thead>
+                    <tbody>
+                        {% for m in team_a.matches %}
+                        <tr>
+                            <td><span class="res-indicator res-{{ m.result }}"></span>{{ m.opponent }}</td>
+                            <td class="score-box">{% if m.is_home %}{{ m.scored }}-{{ m.conceded }}{% else %}{{ m.conceded }}-{{ m.scored }}{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="team-panel">
+                <h2>{{ team_b.team_name }}</h2>
+                <div class="metric-list">
+                    <div class="metric-item"><span class="label">{{ t.goals }}</span><span class="value">{{ analysis.team_b_stats.avg_scored }}</span></div>
+                    <div class="metric-item"><span class="label">{{ t.win }}</span><span class="value">{{ analysis.team_b_stats.win_rate }}%</span></div>
+                    <div class="metric-item"><span class="label">{{ t.clean }}</span><span class="value">{{ analysis.team_b_stats.clean_sheet_rate }}%</span></div>
+                    <div class="metric-item"><span class="label">{{ t.btts }}</span><span class="value">{{ analysis.team_b_stats.btts_prob }}%</span></div>
+                </div>
+                <table>
+                    <thead><tr><th>{{ t.opponent }}</th><th>{{ t.score }}</th></tr></thead>
+                    <tbody>
+                        {% for m in team_b.matches %}
+                        <tr>
+                            <td><span class="res-indicator res-{{ m.result }}"></span>{{ m.opponent }}</td>
+                            <td class="score-box">{% if m.is_home %}{{ m.scored }}-{{ m.conceded }}{% else %}{{ m.conceded }}-{{ m.scored }}{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="prediction-card">
+            <span class="label">{{ t.insight }}</span>
+            <div class="bet-value">
+                {% if analysis.best_bet %}
+                    {% if lang == 'ar' %}
+                        {% if 'Win' in analysis.best_bet.bet %}{{ analysis.best_bet.bet.replace('Win', t.Win) }}{% elif analysis.best_bet.bet in t %}{{ t[analysis.best_bet.bet] }}{% else %}{{ analysis.best_bet.bet }}{% endif %}
+                    {% else %}{{ analysis.best_bet.bet }}{% endif %}
+                {% else %}{{ t.neutral }}{% endif %}
+            </div>
+            <div class="confidence">
+                {% if analysis.best_bet %}{{ analysis.best_bet.prob|round(1) }}% {{ t.prob }}{% else %}{{ t.variance }}{% endif %}
+            </div>
+        </div>
+
+        <a href="/" class="back-nav">{{ t.back }}</a>
+    </div>
+
+    <script>
+        function togglePageLang() {
+            const currentUrl = new URL(window.location.href);
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/analyze';
+
+            const data = {
+                team_a: "{{ team_a.team_name }}",
+                team_b: "{{ team_b.team_name }}",
+                league_a: "{{ league_a }}",
+                league_b: "{{ league_b }}",
+                lang: "{{ 'ar' if lang == 'en' else 'en' }}"
+            };
+
+            for (const key in data) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = data[key];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+</body>
+</html>
