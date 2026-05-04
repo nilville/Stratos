@@ -1,0 +1,79 @@
+:root {
+    --bg: #0a0a0c;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --accent: #2ecc71;
+    --accent-glow: rgba(46, 204, 113, 0.2);
+    --text: #ffffff;
+    --text-dim: #88888e;
+    --input-bg: #16161a;
+    --error: #ff4d4d;
+    --win: #2ecc71;
+    --loss: #ff4d4d;
+    --draw: #555;
+    --font-main: 'Inter', sans-serif;
+    --font-ar: 'Almarai', sans-serif;
+}
+
+[dir="rtl"] { font-family: var(--font-ar); }
+[dir="rtl"] body, [dir="rtl"] input, [dir="rtl"] button, [dir="rtl"] .league-btn, [dir="rtl"] .field-label, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] .label, [dir="rtl"] th, [dir="rtl"] .confidence, [dir="rtl"] .back-nav, [dir="rtl"] .bet-value { 
+    font-family: var(--font-ar); 
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg);
+    background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #0a0a0c 100%);
+    color: var(--text);
+    margin: 0;
+    min-height: 100vh;
+}
+
+.lang-toggle {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    padding: 10px 20px;
+    border-radius: 14px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+.lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+[dir="rtl"] .lang-toggle { right: auto; left: 30px; }
+
+/* Glassmorphism Panels */
+.glass-panel {
+    background: var(--glass);
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* Result Indicators */
+.res-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 12px;
+}
+[dir="rtl"] .res-indicator {
+    margin-right: 0;
+    margin-left: 12px;
+}
+.res-W { background: var(--win); box-shadow: 0 0 12px var(--win); }
+.res-L { background: var(--loss); box-shadow: 0 0 12px var(--loss); }
+.res-D { background: var(--draw); }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

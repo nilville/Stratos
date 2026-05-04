@@ -1,9 +1,11 @@
 import os
 import requests
 import unicodedata
-from dotenv import load_dotenv
+import logging
 
-load_dotenv()
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class APIClient:
     def __init__(self):

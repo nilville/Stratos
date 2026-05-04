@@ -1,14 +1,18 @@
-from flask import Flask, render_template, request
-from services.api_client import APIClient
-from services.analyzer import Analyzer
 import os
+
+from flask import Flask, render_template, request
+
+from services.analyzer import Analyzer
+from services.api_client import APIClient
 
 app = Flask(__name__)
 cache = {}
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
@@ -23,7 +27,7 @@ def analyze():
 
     client = APIClient()
     cache_key = f"{team_a_name.lower()}_{league_a}_{team_b_name.lower()}_{league_b}"
-    
+
     if cache_key in cache:
         return render_template("results.html", **cache[cache_key], lang=lang)
 
@@ -31,12 +35,22 @@ def analyze():
         # Fetch data for Team A
         team_a_data = client.get_match_data(team_a_name, league_a)
         if "error" in team_a_data:
-            return render_template("index.html", error_code=team_a_data["error"], error_team=team_a_data["team"], lang=lang)
+            return render_template(
+                "index.html",
+                error_code=team_a_data["error"],
+                error_team=team_a_data["team"],
+                lang=lang,
+            )
 
         # Fetch data for Team B
         team_b_data = client.get_match_data(team_b_name, league_b)
         if "error" in team_b_data:
-            return render_template("index.html", error_code=team_b_data["error"], error_team=team_b_data["team"], lang=lang)
+            return render_template(
+                "index.html",
+                error_code=team_b_data["error"],
+                error_team=team_b_data["team"],
+                lang=lang,
+            )
 
         # Analyze
         analyzer = Analyzer(team_a_data, team_b_data)
@@ -47,16 +61,16 @@ def analyze():
             "team_b": team_b_data,
             "analysis": analysis_results,
             "league_a": league_a,
-            "league_b": league_b
+            "league_b": league_b,
         }
 
         cache[cache_key] = render_data
         return render_template("results.html", **render_data, lang=lang)
 
-
     except Exception as e:
         return render_template("index.html", error=f"An error occurred: {str(e)}")
 
+
 if __name__ == "__main__":
-    # Use environment variable for debug, default to False for security
-    app.run(debug=os.getenv("FLASK_DEBUG", "True").lower() == "true")
+    # Use environment variable for debug, default to False for production security
+    app.run(debug=os.getenv("FLASK_DEBUG", "False").lower() == "true")
