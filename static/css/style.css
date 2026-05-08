@@ -99,8 +99,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    body { padding: 0 !important; }
-
     .lang-toggle {
         top: 12px;
         right: 12px;
@@ -117,4 +115,29 @@ body {
     .league-grid {
         grid-template-columns: repeat(2, 1fr) !important;
     }
+}
+
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-bottom: 20px;
+}
+
+.footer a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+}
+
+.footer a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(46, 204, 113, 0.05);
 }

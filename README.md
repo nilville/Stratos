@@ -68,3 +68,7 @@ pytest
 ---
 
 *Developed for professional match analysis and strategic simulation.*
+
+## 📬 Contact
+
+For inquiries or feedback, you can reach out via Twitter: [@mlsc87](https://x.com/mlsc87/)

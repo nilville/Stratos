@@ -25,6 +25,7 @@
     "win_label": "Win",
     "no_data": "No match data available.",
     "error_not_found": "Team '{team}' not found.",
+    "contact": "Contact",
     "leagues": {
       "PL": "Premier League",
       "PD": "La Liga",
@@ -60,6 +61,7 @@
     "win_label": "فوز",
     "no_data": "لا توجد بيانات متاحة للمباريات.",
     "error_not_found": "لم يتم العثور على الفريق '{team}'.",
+    "contact": "اتصل بنا",
     "leagues": {
       "PL": "الدوري الإنجليزي",
       "PD": "الدوري الإسباني",
