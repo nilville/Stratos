@@ -2,10 +2,14 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 
 from cachetools import TTLCache
+from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
+
+load_dotenv()
 
 from services.analyzer import Analyzer
 from services.api_client import APIClient
+from services.ai_analyzer import AIAnalyzer
 
 LEAGUES = ["PL", "PD", "BL1", "SA", "FL1", "DED"]
 
@@ -98,6 +102,20 @@ def analyze():
     except Exception as e:
         app.logger.exception("Analysis failed")
         return render_template("index.html", error=f"An error occurred: {str(e)}")
+
+
+@app.route("/api/ai_analyze", methods=["POST"])
+def api_ai_analyze():
+    team_a_data = request.json.get("team_a")
+    team_b_data = request.json.get("team_b")
+    lang = request.json.get("lang", "en")
+
+    if not team_a_data or not team_b_data:
+        return jsonify({"error": "Missing data"}), 400
+
+    ai_analyzer = AIAnalyzer()
+    ai_analysis = ai_analyzer.analyze_matchup(team_a_data, team_b_data, lang=lang)
+    return jsonify({"analysis": ai_analysis})
 
 
 if __name__ == "__main__":

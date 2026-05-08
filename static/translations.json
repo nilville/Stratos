@@ -25,6 +25,8 @@
     "win_label": "Win",
     "no_data": "No match data available.",
     "error_not_found": "Team '{team}' not found.",
+    "ai_analysis_title": "AI Smart Analysis",
+    "generate_ai": "Generate AI Report",
     "contact": "Contact",
     "leagues": {
       "PL": "Premier League",
@@ -61,6 +63,8 @@
     "win_label": "فوز",
     "no_data": "لا توجد بيانات متاحة للمباريات.",
     "error_not_found": "لم يتم العثور على الفريق '{team}'.",
+    "ai_analysis_title": "تحليل ذكي بالذكاء الاصطناعي",
+    "generate_ai": "إنشاء تقرير الذكاء الاصطناعي",
     "contact": "اتصل بنا",
     "leagues": {
       "PL": "الدوري الإنجليزي",
