@@ -5,7 +5,7 @@
     --accent: #2ecc71;
     --accent-glow: rgba(46, 204, 113, 0.2);
     --text: #ffffff;
-    --text-dim: #88888e;
+    --text-dim: #a0a0a8;
     --input-bg: #16161a;
     --error: #ff4d4d;
     --win: #2ecc71;
@@ -31,39 +31,39 @@ body {
 
 .lang-toggle {
     position: fixed;
-    top: 30px;
-    right: 30px;
+    top: 16px;
+    right: 16px;
     background: var(--glass);
     backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border);
-    padding: 10px 20px;
-    border-radius: 14px;
+    padding: 8px 16px;
+    border-radius: 12px;
     color: var(--text);
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     z-index: 100;
     transition: all 0.3s ease;
+    line-height: 1;
 }
 .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
-[dir="rtl"] .lang-toggle { right: auto; left: 30px; }
+[dir="rtl"] .lang-toggle { right: auto; left: 16px; }
 
-/* Glassmorphism Panels */
 .glass-panel {
     background: var(--glass);
     backdrop-filter: blur(25px);
     border: 1px solid var(--glass-border);
-    border-radius: 32px;
+    border-radius: 24px;
     box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
 }
 
-/* Result Indicators */
 .res-indicator {
     width: 8px;
     height: 8px;
     border-radius: 50%;
     display: inline-block;
     margin-right: 12px;
+    flex-shrink: 0;
 }
 [dir="rtl"] .res-indicator {
     margin-right: 0;
@@ -76,4 +76,45 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--glass-border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+[dir="rtl"] .spinner {
+    margin-right: 0;
+    margin-left: 10px;
+}
+
+@media (max-width: 480px) {
+    body { padding: 0 !important; }
+
+    .lang-toggle {
+        top: 12px;
+        right: 12px;
+        padding: 6px 12px;
+        font-size: 11px;
+        border-radius: 10px;
+    }
+    [dir="rtl"] .lang-toggle { right: auto; left: 12px; }
+
+    .glass-panel {
+        border-radius: 16px;
+    }
+
+    .league-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
 }

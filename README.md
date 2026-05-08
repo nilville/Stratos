@@ -9,7 +9,7 @@ A professional-grade predictive modeling application that analyzes historical ma
 *   **Premium Glassmorphism UI**: A high-end, human-made dark theme using blurred translucent surfaces and professional sports typography (**Lexend** & **Inter**).
 *   **Bilingual Support**: Full English/Arabic localization with RTL (Right-to-Left) support and premium Arabic typography (**Almarai**).
 *   **Algorithmic Insight Engine**: Recommends high-value outcomes only when statistical confidence exceeds a defined threshold (>65%).
-*   **Optimized Performance**: In-memory caching and optimized API routing to stay within free-tier rate limits.
+*   **Optimized Performance**: In-memory caching (TTLCache with 300 entries, 1hr TTL) and parallel API requests to minimize wait times.
 
 ## 🛠️ Tech Stack
 
@@ -45,12 +45,20 @@ A professional-grade predictive modeling application that analyzes historical ma
     ```
     Access the application at `http://127.0.0.1:5000`
 
+## 🧪 Running Tests
+
+```bash
+pytest
+```
+
 ## 📂 Project Structure
 
 *   `app.py`: Core routing engine and session management.
 *   `services/api_client.py`: Data retrieval and normalization logic.
 *   `services/analyzer.py`: Statistical processing and prediction algorithms.
 *   `templates/`: High-end localized views.
+*   `static/`: CSS, favicon, and translation files.
+*   `tests/`: Unit tests for analysis engine.
 
 ## 🔒 Security
 
@@ -58,4 +66,5 @@ A professional-grade predictive modeling application that analyzes historical ma
 *   Production-ready debug toggles integrated into the environment configuration.
 
 ---
+
 *Developed for professional match analysis and strategic simulation.*

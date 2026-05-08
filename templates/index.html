@@ -11,9 +11,10 @@
         .main-wrapper {
             width: 100%;
             max-width: 620px;
-            padding: 20px;
+            padding: 16px;
             margin: auto;
             animation: fadeIn 0.8s ease-out;
+            box-sizing: border-box;
         }
 
         .logo {
@@ -23,20 +24,20 @@
             letter-spacing: 6px;
             color: var(--accent);
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
             text-transform: uppercase;
         }
 
-        .hero-text { text-align: center; margin-bottom: 40px; }
-        .hero-text h1 { font-family: 'Lexend', sans-serif; font-size: 40px; font-weight: 500; margin: 0; letter-spacing: -1.5px; }
-        .hero-text p { color: var(--text-dim); font-size: 16px; margin-top: 12px; font-weight: 300; }
+        .hero-text { text-align: center; margin-bottom: 32px; }
+        .hero-text h1 { font-family: 'Lexend', sans-serif; font-size: 36px; font-weight: 500; margin: 0; letter-spacing: -1.5px; line-height: 1.15; }
+        .hero-text p { color: var(--text-dim); font-size: 15px; margin-top: 10px; font-weight: 300; }
 
         .search-container {
-            padding: 40px;
+            padding: 32px;
         }
 
-        .input-pair { display: flex; flex-direction: column; gap: 32px; margin-bottom: 40px; }
-        .field-label { font-size: 10px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: block; }
+        .input-pair { display: flex; flex-direction: column; gap: 28px; margin-bottom: 32px; }
+        .field-label { font-size: 10px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; }
         
         .team-box { display: flex; flex-direction: column; }
 
@@ -44,7 +45,7 @@
             background: var(--input-bg);
             border: 1px solid var(--glass-border);
             border-radius: 14px;
-            padding: 18px;
+            padding: 16px 18px;
             color: #fff;
             font-size: 14px;
             transition: all 0.3s ease;
@@ -99,14 +100,21 @@
             font-size: 16px;
         }
 
+        .league-btn .name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+
         .btn-analyze {
             width: 100%;
             background: var(--accent);
             color: #000;
             border: none;
-            border-radius: 18px;
-            padding: 22px;
-            font-size: 15px;
+            border-radius: 16px;
+            padding: 18px;
+            font-size: 14px;
             font-weight: 800;
             cursor: pointer;
             transition: all 0.4s ease;
@@ -119,25 +127,44 @@
             background: rgba(255, 77, 77, 0.08);
             border: 1px solid rgba(255, 77, 77, 0.2);
             color: var(--error);
-            padding: 16px;
-            border-radius: 16px;
-            margin-bottom: 24px;
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 20px;
             font-size: 13px;
             text-align: center;
         }
 
-        #loader { display: none; text-align: center; margin-top: 24px; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+        #loader { display: none; text-align: center; margin-top: 20px; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; align-items: center; justify-content: center; gap: 8px; }
+        #loader.visible { display: flex; }
+
+        @media (max-width: 480px) {
+            .main-wrapper { padding: 12px; }
+            .logo { margin-bottom: 24px; font-size: 10px; letter-spacing: 4px; }
+            .hero-text { margin-bottom: 24px; }
+            .hero-text h1 { font-size: 26px; letter-spacing: -1px; }
+            .hero-text p { font-size: 13px; margin-top: 8px; }
+            .search-container { padding: 20px 16px; }
+            .input-pair { gap: 20px; margin-bottom: 24px; }
+            .field-label { font-size: 9px; letter-spacing: 1.5px; margin-bottom: 8px; }
+            input { padding: 14px 16px; font-size: 14px; border-radius: 12px; }
+            .league-grid { gap: 4px; margin-top: 8px; }
+            .league-btn { padding: 5px 2px; font-size: 8px; border-radius: 8px; gap: 1px; }
+            .league-btn .icon { font-size: 14px; }
+            .btn-analyze { padding: 16px; font-size: 13px; border-radius: 14px; }
+            .error-card { padding: 12px; font-size: 12px; margin-bottom: 16px; border-radius: 12px; }
+            #loader { margin-top: 16px; font-size: 10px; }
+        }
     </style>
 </head>
 <body class="main-body">
-    <button class="lang-toggle" onclick="toggleLang()" id="lang-btn">العربية</button>
+    <button class="lang-toggle" onclick="toggleLang()" id="lang-btn" data-i18n="toggle">العربية</button>
 
     <div class="main-wrapper">
-        <div class="logo" id="txt-logo">Core Analytics</div>
+        <div class="logo" data-i18n="logo" id="txt-logo">Core Analytics</div>
         
         <div class="hero-text">
-            <h1 id="txt-title">Advanced Simulation</h1>
-            <p id="txt-subtitle">Professional grade modeling for match outcomes.</p>
+            <h1 data-i18n="title" id="txt-title">Advanced Simulation</h1>
+            <p data-i18n="subtitle" id="txt-subtitle">Professional grade modeling for match outcomes.</p>
         </div>
 
         <div class="search-container glass-panel">
@@ -150,33 +177,33 @@
             <form action="/analyze" method="POST" onsubmit="showLoader()">
                 <div class="input-pair">
                     <div>
-                        <label for="team_a_input" class="field-label" id="txt-home-label">Home Side</label>
+                        <label for="team_a_input" class="field-label" data-i18n="home" id="txt-home-label">Home Side</label>
                         <div class="team-box">
-                            <input type="text" id="team_a_input" name="team_a" placeholder="Arsenal" aria-required="true" required>
+                            <input type="text" id="team_a_input" name="team_a" placeholder="Arsenal" aria-required="true" required list="team-suggestions-a" autocomplete="off">
                             <div class="league-grid" id="grid-a" role="radiogroup" aria-label="Select home league">
                                 <button type="button" class="league-btn active" data-value="PL" data-icon="🇬🇧" aria-checked="true">
                                     <span class="icon">🇬🇧</span>
-                                    <span class="name">Premier League</span>
+                                    <span class="name" data-i18n-league="PL">Premier League</span>
                                 </button>
                                 <button type="button" class="league-btn" data-value="PD" data-icon="🇪🇸" aria-checked="false">
                                     <span class="icon">🇪🇸</span>
-                                    <span class="name">La Liga</span>
+                                    <span class="name" data-i18n-league="PD">La Liga</span>
                                 </button>
                                 <button type="button" class="league-btn" data-value="BL1" data-icon="🇩🇪" aria-checked="false">
                                     <span class="icon">🇩🇪</span>
-                                    <span class="name">Bundesliga</span>
+                                    <span class="name" data-i18n-league="BL1">Bundesliga</span>
                                 </button>
                                 <button type="button" class="league-btn" data-value="SA" data-icon="🇮🇹" aria-checked="false">
                                     <span class="icon">🇮🇹</span>
-                                    <span class="name">Serie A</span>
+                                    <span class="name" data-i18n-league="SA">Serie A</span>
                                 </button>
                                 <button type="button" class="league-btn" data-value="FL1" data-icon="🇫🇷" aria-checked="false">
                                     <span class="icon">🇫🇷</span>
-                                    <span class="name">Ligue 1</span>
+                                    <span class="name" data-i18n-league="FL1">Ligue 1</span>
                                 </button>
                                 <button type="button" class="league-btn" data-value="DED" data-icon="🇳🇱" aria-checked="false">
                                     <span class="icon">🇳🇱</span>
-                                    <span class="name">Eredivisie</span>
+                                    <span class="name" data-i18n-league="DED">Eredivisie</span>
                                 </button>
                             </div>
                             <input type="hidden" name="league_a" id="league_a" value="PL">
@@ -184,33 +211,33 @@
                     </div>
 
                     <div>
-                        <label for="team_b_input" class="field-label" id="txt-away-label">Away Side</label>
+                        <label for="team_b_input" class="field-label" data-i18n="away" id="txt-away-label">Away Side</label>
                         <div class="team-box">
-                            <input type="text" id="team_b_input" name="team_b" placeholder="Liverpool" aria-required="true" required>
+                            <input type="text" id="team_b_input" name="team_b" placeholder="Liverpool" aria-required="true" required list="team-suggestions-b" autocomplete="off">
                             <div class="league-grid" id="grid-b" role="radiogroup" aria-label="Select away league">
                                 <button type="button" class="league-btn active" data-value="PL" data-icon="🇬🇧" aria-checked="true">
                                     <span class="icon">🇬🇧</span>
-                                    <span class="name">Premier League</span>
+                                    <span class="name" data-i18n-league="PL">Premier League</span>
                                 </button>
                                 <button type="button" class="league-btn" data-value="PD" data-icon="🇪🇸" aria-checked="false">
                                     <span class="icon">🇪🇸</span>
-                                    <span class="name">La Liga</span>
+                                    <span class="name" data-i18n-league="PD">La Liga</span>
                                 </button>
                                 <button type="button" class="league-btn" data-value="BL1" data-icon="🇩🇪" aria-checked="false">
                                     <span class="icon">🇩🇪</span>
-                                    <span class="name">Bundesliga</span>
+                                    <span class="name" data-i18n-league="BL1">Bundesliga</span>
                                 </button>
                                 <button type="button" class="league-btn" data-value="SA" data-icon="🇮🇹" aria-checked="false">
                                     <span class="icon">🇮🇹</span>
-                                    <span class="name">Serie A</span>
+                                    <span class="name" data-i18n-league="SA">Serie A</span>
                                 </button>
                                 <button type="button" class="league-btn" data-value="FL1" data-icon="🇫🇷" aria-checked="false">
                                     <span class="icon">🇫🇷</span>
-                                    <span class="name">Ligue 1</span>
+                                    <span class="name" data-i18n-league="FL1">Ligue 1</span>
                                 </button>
                                 <button type="button" class="league-btn" data-value="DED" data-icon="🇳🇱" aria-checked="false">
                                     <span class="icon">🇳🇱</span>
-                                    <span class="name">Eredivisie</span>
+                                    <span class="name" data-i18n-league="DED">Eredivisie</span>
                                 </button>
                             </div>
                             <input type="hidden" name="league_b" id="league_b" value="PL">
@@ -218,64 +245,59 @@
                     </div>
                 </div>
 
+                <datalist id="team-suggestions-a"></datalist>
+                <datalist id="team-suggestions-b"></datalist>
+
                 <input type="hidden" name="lang" id="lang-input" value="{{ lang or 'en' }}">
-                <button type="submit" class="btn-analyze" id="txt-btn">Generate Insight</button>
+                <button type="submit" class="btn-analyze" data-i18n="btn" id="txt-btn">Generate Insight</button>
             </form>
-            <div id="loader" id="txt-loader">Processing match variables...</div>
+            <div id="loader">
+                <span class="spinner"></span>
+                <span data-i18n="loader" id="txt-loader">Processing match variables...</span>
+            </div>
         </div>
     </div>
 
     <script>
-        const translations = {
-            en: {
-                logo: "Core Analytics", 
-                title: "Advanced Simulation", 
-                subtitle: "Professional grade modeling for match outcomes.",
-                home: "Home Side", 
-                away: "Away Side", 
-                btn: "Generate Insight", 
-                loader: "Processing match variables...",
-                toggle: "العربية", 
-                err_not_found: "Team '{team}' not found.",
-                leagues: { 
-                    PL: "Premier League", 
-                    PD: "La Liga", 
-                    BL1: "Bundesliga", 
-                    SA: "Serie A", 
-                    FL1: "Ligue 1", 
-                    DED: "Eredivisie" 
-                }
-            },
-            ar: {
-                logo: "التحليلات الجوهرية", 
-                title: "محاكاة متقدمة", 
-                subtitle: "نمذجة احترافية لتوقعات نتائج المباريات.",
-                home: "الفريق المستضيف", 
-                away: "الفريق الضيف", 
-                btn: "تحليل المباراة", 
-                loader: "جاري تحليل البيانات...",
-                toggle: "English", 
-                err_not_found: "لم يتم العثور على الفريق '{team}'.",
-                leagues: { 
-                    PL: "الدوري الإنجليزي", 
-                    PD: "الدوري الإسباني", 
-                    BL1: "الدوري الألماني", 
-                    SA: "الدوري الإيطالي", 
-                    FL1: "الدوري الفرنسي", 
-                    DED: "الدوري الهولندي" 
-                }
-            }
-        };
-
+        let translations = {};
+        let teamsByLeague = {};
         let currentLang = localStorage.getItem('preferredLang') || "{{ lang or 'en' }}";
 
-        // Button Grid Logic
+        function populateSuggestions(gridId, datalistId) {
+            const grid = document.getElementById(gridId);
+            const activeBtn = grid.querySelector('.league-btn.active');
+            const league = activeBtn ? activeBtn.getAttribute('data-value') : 'PL';
+            const datalist = document.getElementById(datalistId);
+            const teams = teamsByLeague[league] || [];
+            datalist.innerHTML = teams.map(t => `<option value="${t.name}">`).join('');
+        }
+
+        async function loadTranslations() {
+            try {
+                const resp = await fetch('/static/translations.json');
+                translations = await resp.json();
+                applyLang(currentLang);
+            } catch (e) {
+                console.error('Failed to load translations', e);
+            }
+        }
+
+        async function loadTeams() {
+            try {
+                const resp = await fetch('/api/teams');
+                teamsByLeague = await resp.json();
+                populateSuggestions('grid-a', 'team-suggestions-a');
+                populateSuggestions('grid-b', 'team-suggestions-b');
+            } catch (e) {
+                console.error('Failed to load teams', e);
+            }
+        }
+
         document.querySelectorAll('.league-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const grid = this.parentElement;
                 const hiddenInput = grid.nextElementSibling;
                 const value = this.getAttribute('data-value');
-
                 grid.querySelectorAll('.league-btn').forEach(b => {
                     b.classList.remove('active');
                     b.setAttribute('aria-checked', 'false');
@@ -283,44 +305,47 @@
                 this.classList.add('active');
                 this.setAttribute('aria-checked', 'true');
                 hiddenInput.value = value;
+
+                const gridId = grid.id;
+                const datalistId = gridId === 'grid-a' ? 'team-suggestions-a' : 'team-suggestions-b';
+                populateSuggestions(gridId, datalistId);
             });
         });
 
-        function updateUI(lang) {
+        function applyLang(lang) {
             const data = translations[lang];
+            if (!data) return;
             const html = document.getElementById('html-tag');
             html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
             html.setAttribute('lang', lang);
 
-            document.getElementById('txt-logo').innerText = data.logo;
-            document.getElementById('txt-title').innerText = data.title;
-            document.getElementById('txt-subtitle').innerText = data.subtitle;
-            document.getElementById('txt-home-label').innerText = data.home;
-            document.getElementById('txt-away-label').innerText = data.away;
-            document.getElementById('txt-btn').innerText = data.btn;
-            document.getElementById('lang-btn').innerText = data.toggle;
-            document.getElementById('lang-input').value = lang;
-
-            // Update Button Labels
-            document.querySelectorAll('.league-btn').forEach(btn => {
-                const val = btn.getAttribute('data-value');
-                btn.querySelector('.name').innerText = data.leagues[val];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (data[key] !== undefined) {
+                    el.innerText = data[key];
+                }
             });
+            document.querySelectorAll('[data-i18n-league]').forEach(el => {
+                const key = el.getAttribute('data-i18n-league');
+                if (data.leagues && data.leagues[key] !== undefined) {
+                    el.innerText = data.leagues[key];
+                }
+            });
+            document.getElementById('lang-input').value = lang;
         }
 
         function toggleLang() {
             currentLang = currentLang === 'en' ? 'ar' : 'en';
             localStorage.setItem('preferredLang', currentLang);
-            updateUI(currentLang);
+            applyLang(currentLang);
         }
 
         function showLoader() {
-            document.getElementById('loader').style.display = 'block';
-            if(currentLang === 'ar') document.getElementById('loader').innerText = translations.ar.loader;
+            document.getElementById('loader').classList.add('visible');
         }
 
-        // Initialize UI with persistent language
-        updateUI(currentLang);
+        loadTranslations();
+        loadTeams();
     </script>
 </body>
 </html>
