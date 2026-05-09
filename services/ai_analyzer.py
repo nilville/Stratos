@@ -24,7 +24,7 @@ class AIAnalyzer:
         data = {
             "model": self.model,
             "messages": [
-                {"role": "system", "content": "You are a sharp football betting expert. Provide hyper-concise predictions based ONLY on the provided match results. No introductions, no filler, no 'Based on the data'. Just direct insight."},
+                {"role": "system", "content": "You are an elite football analyst specializing in data-driven match predictions and tactical analysis. Your expertise includes team form analysis, goal-scoring patterns, defensive vulnerabilities, and betting market insights. Always provide specific, actionable intelligence based strictly on the statistical data provided. Avoid generic statements and focus on unique insights that give genuine predictive value."},
                 {"role": "user", "content": prompt}
             ]
         }
@@ -46,20 +46,74 @@ class AIAnalyzer:
                 matches_str += f"- vs {m['opponent']}: {m['scored']}-{m['conceded']} ({result_map[m['result']]})\n"
             return matches_str
 
+        def calculate_team_stats(team):
+            matches = team.get('matches', [])
+            if not matches:
+                return {"avg_scored": 0, "avg_conceded": 0, "win_rate": 0, "form": ""}
+            
+            count = len(matches)
+            total_scored = sum(m.get("scored", 0) for m in matches)
+            total_conceded = sum(m.get("conceded", 0) for m in matches)
+            wins = sum(1 for m in matches if m.get("result") == "W")
+            
+            # Calculate recent form (last 5 matches)
+            recent_form = ""
+            for m in matches[:5]:
+                recent_form += m.get("result", "D")
+            
+            return {
+                "avg_scored": round(total_scored / count, 2),
+                "avg_conceded": round(total_conceded / count, 2),
+                "win_rate": round((wins / count) * 100, 2),
+                "form": recent_form
+            }
+
+        stats_a = calculate_team_stats(team_a)
+        stats_b = calculate_team_stats(team_b)
+
         prompt = f"""
-Match: {team_a['team_name']} vs {team_b['team_name']}
-Data:
-{team_a['team_name']} results:
+You are an elite football analyst with deep expertise in match prediction, team tactics, and betting markets. Analyze the following matchup using advanced football intelligence.
+
+MATCHUP: {team_a['team_name']} vs {team_b['team_name']}
+
+TEAM PERFORMANCE ANALYSIS:
+
+{team_a['team_name']}:
+- Recent Form: {stats_a['form']}
+- Goals Scored: {stats_a['avg_scored']} per game
+- Goals Conceded: {stats_a['avg_conceded']} per game  
+- Win Rate: {stats_a['win_rate']}%
+- Recent Results:
 {format_matches(team_a)}
 
-{team_b['team_name']} results:
+{team_b['team_name']}:
+- Recent Form: {stats_b['form']}
+- Goals Scored: {stats_b['avg_scored']} per game
+- Goals Conceded: {stats_b['avg_conceded']} per game
+- Win Rate: {stats_b['win_rate']}%
+- Recent Results:
 {format_matches(team_b)}
 
-Task: Provide a hyper-concise prediction.
-Format:
-**Prediction**: [One sentence prediction based on these specific results]
-**Best Bet**: [The single most likely pick]
+ANALYSIS REQUIREMENTS:
+1. Evaluate head-to-head tactical matchups
+2. Consider current form and momentum
+3. Analyze attacking/defensive balance
+4. Identify key performance trends
+5. Factor in goal-scoring patterns
 
-Respond in {lang}. No fluff.
+OUTPUT FORMAT (strictly follow):
+**Match Analysis**: [2-3 sentences of tactical insight]
+**Key Factors**: [Bullet 2-3 critical factors influencing the outcome]
+**Prediction**: [Clear prediction with score expectation]
+**Best Bet**: [Single strongest betting recommendation with reasoning]
+**Confidence**: [High/Medium/Low with brief justification]
+
+CRITICAL INSTRUCTIONS:
+- Base analysis ONLY on provided statistics and recent form
+- No generic football clichés or obvious statements
+- Provide specific, actionable insights
+- Consider both teams' current momentum
+- Respond in {lang} language
+- Maximum 150 words total
 """
         return prompt
