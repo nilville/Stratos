@@ -4,6 +4,7 @@
     --glass-border: rgba(255, 255, 255, 0.08);
     --accent: #2ecc71;
     --accent-glow: rgba(46, 204, 113, 0.2);
+    --accent-glow-strong: rgba(46, 204, 113, 0.4);
     --text: #ffffff;
     --text-dim: #a0a0a8;
     --input-bg: #16161a;
@@ -16,17 +17,57 @@
 }
 
 [dir="rtl"] { font-family: var(--font-ar); }
-[dir="rtl"] body, [dir="rtl"] input, [dir="rtl"] button, [dir="rtl"] .league-btn, [dir="rtl"] .field-label, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] .label, [dir="rtl"] th, [dir="rtl"] .confidence, [dir="rtl"] .back-nav, [dir="rtl"] .bet-value { 
-    font-family: var(--font-ar); 
+[dir="rtl"] body, [dir="rtl"] input, [dir="rtl"] button, [dir="rtl"] .league-btn, [dir="rtl"] .field-label, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] .label, [dir="rtl"] th, [dir="rtl"] .confidence, [dir="rtl"] .back-nav, [dir="rtl"] .bet-value {
+    font-family: var(--font-ar);
 }
 
 body {
     font-family: var(--font-main);
     background-color: var(--bg);
-    background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #0a0a0c 100%);
     color: var(--text);
     margin: 0;
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(46, 204, 113, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(46, 204, 113, 0.03) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(26, 26, 46, 0.6) 0%, #0a0a0c 100%);
+    animation: ambientShift 20s ease-in-out infinite alternate;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.03) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.02) 0%, transparent 100%),
+        radial-gradient(1px 1px at 50% 30%, rgba(255,255,255,0.03) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.02) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.03) 0%, transparent 100%);
+    background-size: 200px 200px;
+    animation: starDrift 40s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes ambientShift {
+    0% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 0.6; transform: scale(1); }
+}
+
+@keyframes starDrift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-200px); }
 }
 
 .lang-toggle {
@@ -46,7 +87,7 @@ body {
     transition: all 0.3s ease;
     line-height: 1;
 }
-.lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.lang-toggle:hover { border-color: var(--accent); color: var(--accent); transform: scale(1.05); }
 [dir="rtl"] .lang-toggle { right: auto; left: 16px; }
 
 .glass-panel {
@@ -55,6 +96,11 @@ body {
     border: 1px solid var(--glass-border);
     border-radius: 24px;
     box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glass-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 35px 70px -12px rgba(0, 0, 0, 0.7);
 }
 
 .res-indicator {
@@ -82,6 +128,15 @@ body {
     to { transform: rotate(360deg); }
 }
 
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 25px 60px rgba(0,0,0,0.4), inset 0 0 40px var(--accent-glow); }
+    50% { box-shadow: 0 25px 80px rgba(0,0,0,0.5), inset 0 0 60px var(--accent-glow-strong); }
+}
+
+@keyframes barGrow {
+    from { width: 0; }
+}
+
 .spinner {
     width: 20px;
     height: 20px;
@@ -96,6 +151,345 @@ body {
 [dir="rtl"] .spinner {
     margin-right: 0;
     margin-left: 10px;
+}
+
+/* ====== TEAM CRESTS ====== */
+.team-crest {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    vertical-align: middle;
+    filter: drop-shadow(0 2px 8px rgba(255,255,255,0.1));
+    transition: transform 0.3s ease;
+}
+.team-crest:hover {
+    transform: scale(1.15);
+}
+.team-crest-sm {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    vertical-align: middle;
+    margin-right: 10px;
+    filter: drop-shadow(0 1px 3px rgba(255,255,255,0.08));
+}
+[dir="rtl"] .team-crest-sm {
+    margin-right: 0;
+    margin-left: 10px;
+}
+
+/* ====== STAT BARS ====== */
+.stat-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+.stat-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--accent);
+    animation: barGrow 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* ====== FORM INDICATORS ====== */
+.form-dots {
+    display: flex;
+    gap: 6px;
+    margin: 10px;
+    justify-content: center;
+}
+.form-dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: transform 0.2s ease;
+}
+.form-dot:hover {
+    transform: scale(1.2);
+    cursor: default;
+}
+.form-W {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--win);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.15);
+}
+.form-L {
+    background: rgba(255, 77, 77, 0.15);
+    color: var(--loss);
+    border: 1px solid rgba(255, 77, 77, 0.3);
+    box-shadow: 0 0 8px rgba(255, 77, 77, 0.15);
+}
+.form-D {
+    background: rgba(85, 85, 85, 0.2);
+    color: var(--draw);
+    border: 1px solid rgba(85, 85, 85, 0.3);
+}
+
+/* ====== PREDICTION CARD ====== */
+.prediction-card {
+    border: 2px solid var(--accent);
+    border-radius: 28px;
+    padding: 40px 32px;
+    text-align: center;
+    margin-top: 32px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), inset 0 0 40px var(--accent-glow);
+    animation: pulseGlow 3s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+.prediction-card .label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+    display: block;
+    color: var(--text-dim);
+    position: relative;
+    z-index: 1;
+}
+.prediction-card .bet-value {
+    font-family: 'Lexend', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -2px;
+    color: #fff;
+    text-shadow: 0 0 25px var(--accent-glow);
+    line-height: 1.1;
+    word-break: break-word;
+    hyphens: auto;
+    position: relative;
+    z-index: 1;
+}
+.prediction-card .confidence {
+    margin-top: 20px;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    word-break: break-word;
+    hyphens: auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* ====== PROBABILITY BARS ====== */
+.prob-bars {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+}
+.prob-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.prob-bar-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    min-width: 80px;
+    text-align: right;
+    white-space: nowrap;
+}
+[dir="rtl"] .prob-bar-label {
+    text-align: left;
+}
+.prob-bar-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.prob-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, rgba(46,204,113,0.4), var(--accent));
+    animation: barGrow 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    box-shadow: 0 0 6px var(--accent-glow);
+}
+.prob-bar-pct {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    min-width: 36px;
+    text-align: left;
+}
+[dir="rtl"] .prob-bar-pct {
+    text-align: right;
+}
+
+/* ====== HOW IT WORKS ====== */
+.how-section {
+    margin-top: 48px;
+    text-align: center;
+}
+.how-section h2 {
+    font-family: 'Lexend', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 28px;
+    letter-spacing: -0.5px;
+}
+.how-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+.how-step {
+    padding: 20px 16px;
+    border-radius: 16px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+}
+.how-step:hover {
+    border-color: rgba(46, 204, 113, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px -8px rgba(0,0,0,0.5);
+}
+.how-step .icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    display: block;
+}
+.how-step .step-num {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 6px;
+}
+.how-step h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 6px 0;
+}
+.how-step p {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ====== TECH BADGES ====== */
+.tech-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+}
+.tech-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text-dim);
+    transition: all 0.3s ease;
+}
+.tech-badge:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(46, 204, 113, 0.05);
+    transform: translateY(-2px);
+}
+
+/* ====== MICRO-INTERACTIONS ====== */
+input {
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    color: #fff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-glow);
+    background: #1c1c21;
+    transform: scale(1.01);
+}
+
+.league-btn {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 6px 4px;
+    color: var(--text-dim);
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+}
+.league-btn:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    transform: translateY(-1px);
+}
+.league-btn.active {
+    background: rgba(46, 204, 113, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.btn-analyze {
+    width: 100%;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+}
+.btn-analyze:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px -5px var(--accent-glow-strong);
+    filter: brightness(1.1);
+}
+.btn-analyze:active {
+    transform: translateY(-1px);
 }
 
 @media (max-width: 480px) {
@@ -114,6 +508,47 @@ body {
 
     .league-grid {
         grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .team-crest {
+        width: 32px;
+        height: 32px;
+    }
+    .team-crest-sm {
+        width: 18px;
+        height: 18px;
+    }
+
+    .form-dot {
+        width: 22px;
+        height: 22px;
+        font-size: 8px;
+    }
+
+    .how-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .prob-bars {
+        gap: 8px;
+    }
+    .prob-bar-label {
+        font-size: 10px;
+        min-width: 60px;
+    }
+    .prob-bar-pct {
+        font-size: 10px;
+        min-width: 30px;
+    }
+
+    .prediction-card { padding: 32px 20px; border-radius: 20px; margin-top: 24px; }
+    .prediction-card .label { font-size: 10px; letter-spacing: 2px; margin-bottom: 16px; }
+    .prediction-card .bet-value { font-size: 28px; letter-spacing: -0.5px; }
+    .prediction-card .confidence { margin-top: 16px; font-size: 14px; letter-spacing: 0.5px; }
+
+    .tech-badge {
+        font-size: 9px;
+        padding: 4px 10px;
     }
 }
 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report: {{ team_a.team_name }} vs {{ team_b.team_name }}</title>
+    <meta name="description" content="Match analysis report for {{ team_a.team_name }} vs {{ team_b.team_name }}. View stats, predictions, and AI-powered insights.">
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Lexend:wght@300;500;700&family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
@@ -14,15 +15,61 @@
         .container { width: 100%; max-width: 1000px; animation: fadeIn 0.8s ease-out; box-sizing: border-box; }
 
         .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-family: 'Lexend', sans-serif; font-size: 36px; font-weight: 500; margin: 0; letter-spacing: -1.5px; line-height: 1.15; word-break: break-word; hyphens: auto; }
-        .header .vs { color: var(--accent); font-size: 18px; margin: 0 12px; font-weight: 800; display: inline-block; }
+        .matchup-header {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-family: 'Lexend', sans-serif;
+            font-size: 36px;
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: -1.5px;
+            line-height: 1.15;
+            word-break: break-word;
+            hyphens: auto;
+        }
+        .matchup-team {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+        .matchup-team img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            vertical-align: middle;
+        }
+        .header .vs { color: var(--accent); font-size: 22px; margin: 0 6px; font-weight: 800; display: inline-block; }
 
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 32px; }
         .team-panel { padding: 28px; }
-        .team-panel h2 { font-family: 'Lexend', sans-serif; font-size: 22px; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; color: var(--accent); font-weight: 600; }
+        .team-panel .team-name {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+            flex-wrap: wrap;
+            width: 100%;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 12px;
+            color: var(--accent);
+            font-family: 'Lexend', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0 0 20px;
+        }
+
+        .team-panel .team-name img {
+            max-width: 24px;
+            max-height: 24px;
+        }
 
         .metric-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-        .metric-item .label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1.5px; margin-bottom: 4px; display: block; }
+        .metric-item .label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1.5px; margin: 4px; display: block; }
         .metric-item .value { font-size: 24px; font-weight: 700; font-family: 'Lexend', sans-serif; }
 
         .no-data-msg { text-align: center; padding: 32px; color: var(--text-dim); font-size: 14px; }
@@ -40,24 +87,11 @@
 
         .score-box { font-family: 'Lexend', sans-serif; font-weight: 700; letter-spacing: 1px; direction: ltr; color: #fff; }
 
-        .prediction-card {
-            border: 2px solid var(--accent);
-            border-radius: 28px;
-            padding: 40px 32px;
-            text-align: center;
-            margin-top: 32px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), inset 0 0 40px var(--accent-glow);
-        }
-
-        .prediction-card .label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 20px; display: block; color: var(--text-dim); }
-        .prediction-card .bet-value { font-family: 'Lexend', sans-serif; font-size: 48px; font-weight: 700; margin: 0; letter-spacing: -2px; color: #fff; text-shadow: 0 0 25px var(--accent-glow); line-height: 1.1; word-break: break-word; hyphens: auto; }
-        .prediction-card .confidence { margin-top: 20px; font-weight: 800; font-size: 16px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; word-break: break-word; hyphens: auto; }
-
         .back-nav { display: block; text-align: center; margin-top: 40px; color: var(--text-dim); text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s; word-break: break-word; }
         .back-nav:hover { color: var(--accent); }
 
         @media (max-width: 960px) {
-            .header h1 { font-size: 28px; }
+            .matchup-header { font-size: 32px; }
             .summary-grid { gap: 24px; }
         }
 
@@ -66,10 +100,16 @@
         @media (max-width: 480px) {
             body { padding: 24px 20px; }
             .header { margin-bottom: 32px; }
-            .header h1 { font-size: 22px; letter-spacing: -0.5px; }
+            .matchup-header {
+                font-size: 24px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .matchup-header .vs { display: inline-block; margin: 0; }
+            .matchup-team { white-space: normal; }
             .header .vs { font-size: 14px; margin: 0 6px; }
             .team-panel { padding: 24px 16px; margin-bottom: 16px; }
-            .team-panel h2 { font-size: 18px; margin-bottom: 18px; padding-bottom: 10px; }
+            .team-panel .team-name { font-size: 18px; margin-bottom: 18px; padding-bottom: 10px; }
             .metric-list { gap: 14px; margin-bottom: 20px; grid-template-columns: 1fr 1fr; }
             .metric-item .label { font-size: 9px; letter-spacing: 1px; }
             .metric-item .value { font-size: 20px; }
@@ -82,10 +122,6 @@
             .score-box { font-size: 12px; }
             .res-indicator { width: 6px; height: 6px; margin-right: 8px; }
             [dir="rtl"] .res-indicator { margin-right: 0; margin-left: 8px; }
-            .prediction-card { padding: 32px 20px; border-radius: 20px; margin-top: 24px; }
-            .prediction-card .label { font-size: 10px; letter-spacing: 2px; margin-bottom: 16px; }
-            .prediction-card .bet-value { font-size: 28px; letter-spacing: -0.5px; }
-            .prediction-card .confidence { margin-top: 16px; font-size: 14px; letter-spacing: 0.5px; }
             .back-nav { margin-top: 32px; font-size: 12px; }
         }
 
@@ -185,18 +221,36 @@
 
     <div class="container">
         <div class="header">
-            <h1>{{ team_a.team_name }}<span class="vs">/</span>{{ team_b.team_name }}</h1>
+            <h1 class="matchup-header">
+                <span class="matchup-team">
+                    {% if team_a.crest %}<img src="{{ team_a.crest }}" alt="" class="team-crest">{% endif %}
+                    {{ team_a.team_name }}
+                </span>
+                <span class="vs">VS</span>
+                <span class="matchup-team">
+                    {% if team_b.crest %}<img src="{{ team_b.crest }}" alt="" class="team-crest">{% endif %}
+                    {{ team_b.team_name }}
+                </span>
+            </h1>
         </div>
 
         <div class="summary-grid">
             <div class="team-panel glass-panel">
-                <h2>{{ team_a.team_name }}</h2>
+                <h2 class="team-name">
+                    {% if team_a.crest %}<img src="{{ team_a.crest }}" alt="" class="team-crest-sm">{% endif %}
+                    {{ team_a.team_name }}
+                </h2>
                 {% if team_a.matches %}
+                <div class="form-dots">
+                    {% for m in team_a.matches[:5] %}
+                    <span class="form-dot form-{{ m.result }}">{{ m.result }}</span>
+                    {% endfor %}
+                </div>
                 <div class="metric-list">
                     <div class="metric-item"><span class="label" data-i18n="goals">Avg Goals</span><span class="value">{{ analysis.team_a_stats.avg_scored }}</span></div>
-                    <div class="metric-item"><span class="label" data-i18n="win">Win Prob</span><span class="value">{{ analysis.team_a_stats.win_rate }}%</span></div>
-                    <div class="metric-item"><span class="label" data-i18n="clean">Clean Sheets</span><span class="value">{{ analysis.team_a_stats.clean_sheet_rate }}%</span></div>
-                    <div class="metric-item"><span class="label" data-i18n="btts">BTTS Rate</span><span class="value">{{ analysis.team_a_stats.btts_prob }}%</span></div>
+                    <div class="metric-item"><span class="label" data-i18n="win">Win Prob</span><span class="value">{{ analysis.team_a_stats.win_rate }}%</span><div class="stat-bar"><div class="stat-bar-fill" style="width: {{ analysis.team_a_stats.win_rate }}%"></div></div></div>
+                    <div class="metric-item"><span class="label" data-i18n="clean">Clean Sheets</span><span class="value">{{ analysis.team_a_stats.clean_sheet_rate }}%</span><div class="stat-bar"><div class="stat-bar-fill" style="width: {{ analysis.team_a_stats.clean_sheet_rate }}%"></div></div></div>
+                    <div class="metric-item"><span class="label" data-i18n="btts">BTTS Rate</span><span class="value">{{ analysis.team_a_stats.btts_prob }}%</span><div class="stat-bar"><div class="stat-bar-fill" style="width: {{ analysis.team_a_stats.btts_prob }}%"></div></div></div>
                 </div>
                 <table>
                     <thead><tr><th data-i18n="opponent">Vs Opponent</th><th data-i18n="score">Score</th></tr></thead>
@@ -215,13 +269,21 @@
             </div>
 
             <div class="team-panel glass-panel">
-                <h2>{{ team_b.team_name }}</h2>
+                <h2 class="team-name">
+                    {% if team_b.crest %}<img src="{{ team_b.crest }}" alt="" class="team-crest-sm">{% endif %}
+                    {{ team_b.team_name }}
+                </h2>
                 {% if team_b.matches %}
+                <div class="form-dots">
+                    {% for m in team_b.matches[:5] %}
+                    <span class="form-dot form-{{ m.result }}">{{ m.result }}</span>
+                    {% endfor %}
+                </div>
                 <div class="metric-list">
                     <div class="metric-item"><span class="label" data-i18n="goals">Avg Goals</span><span class="value">{{ analysis.team_b_stats.avg_scored }}</span></div>
-                    <div class="metric-item"><span class="label" data-i18n="win">Win Prob</span><span class="value">{{ analysis.team_b_stats.win_rate }}%</span></div>
-                    <div class="metric-item"><span class="label" data-i18n="clean">Clean Sheets</span><span class="value">{{ analysis.team_b_stats.clean_sheet_rate }}%</span></div>
-                    <div class="metric-item"><span class="label" data-i18n="btts">BTTS Rate</span><span class="value">{{ analysis.team_b_stats.btts_prob }}%</span></div>
+                    <div class="metric-item"><span class="label" data-i18n="win">Win Prob</span><span class="value">{{ analysis.team_b_stats.win_rate }}%</span><div class="stat-bar"><div class="stat-bar-fill" style="width: {{ analysis.team_b_stats.win_rate }}%"></div></div></div>
+                    <div class="metric-item"><span class="label" data-i18n="clean">Clean Sheets</span><span class="value">{{ analysis.team_b_stats.clean_sheet_rate }}%</span><div class="stat-bar"><div class="stat-bar-fill" style="width: {{ analysis.team_b_stats.clean_sheet_rate }}%"></div></div></div>
+                    <div class="metric-item"><span class="label" data-i18n="btts">BTTS Rate</span><span class="value">{{ analysis.team_b_stats.btts_prob }}%</span><div class="stat-bar"><div class="stat-bar-fill" style="width: {{ analysis.team_b_stats.btts_prob }}%"></div></div></div>
                 </div>
                 <table>
                     <thead><tr><th data-i18n="opponent">Vs Opponent</th><th data-i18n="score">Score</th></tr></thead>
@@ -250,8 +312,21 @@
                 {%- else -%}<span data-i18n="neutral">Market Neutral</span>{%- endif -%}
             </div>
             <div class="confidence" id="confidence-text">
-                {%- if analysis.best_bet -%}{{ analysis.best_bet.prob|round(1) }}% <span data-i18n="prob">Probability Score</span>{%- else -%}<span data-i18n="variance">Statistical variance too high for prediction.</span>{%- endif -%}
+                {%- if analysis.best_bet -%}<span class="confidence-num" data-target="{{ analysis.best_bet.prob|round(1) }}">0</span>% <span data-i18n="prob">Probability Score</span>{%- else -%}<span data-i18n="variance">Statistical variance too high for prediction.</span>{%- endif -%}
             </div>
+            {% if analysis.all_insights and analysis.all_insights|length > 1 %}
+            <div class="prob-bars">
+                {% for insight in analysis.all_insights %}
+                <div class="prob-bar-row">
+                    <span class="prob-bar-label">{{ insight.bet }}</span>
+                    <div class="prob-bar-track">
+                        <div class="prob-bar-fill" style="width: {{ insight.prob }}%"></div>
+                    </div>
+                    <span class="prob-bar-pct">{{ insight.prob|round(1) }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
 
         <div class="ai-trigger-container" id="ai-trigger-wrapper">
@@ -270,6 +345,15 @@
 
         <a href="/" class="back-nav" data-i18n="back">← Back to Simulation Engine</a>
 
+        <div class="tech-badges">
+            <span class="tech-badge">Flask</span>
+            <span class="tech-badge">Python</span>
+            <span class="tech-badge">Football-Data API</span>
+            <span class="tech-badge">OpenRouter AI</span>
+            <span class="tech-badge">RTL Support</span>
+            <span class="tech-badge">Glassmorphism</span>
+        </div>
+
         <div class="footer">
             <a href="https://x.com/mlsc87/" target="_blank" rel="noopener noreferrer">
                 <span data-i18n="contact">Contact</span>: @mlsc87
@@ -287,6 +371,10 @@
             } catch (e) {
                 console.error('Failed to load translations', e);
             }
+        }
+
+        function getPreferredLang() {
+            return localStorage.getItem('preferredLang') || '{{ lang or "en" }}';
         }
 
         function applyLang(lang) {
@@ -326,6 +414,13 @@
             applyLang(next);
         }
 
+        function setInitialLang() {
+            const preferred = getPreferredLang();
+            if (preferred !== '{{ lang or "en" }}') {
+                applyLang(preferred);
+            }
+        }
+
         function renderAIContent(rawContent) {
             const aiContentEl = document.getElementById('ai-content');
             const md = window.markdownit({
@@ -346,8 +441,8 @@
             btn.disabled = true;
             loader.classList.remove('hidden');
             
-            const teamA = {{ team_a | tojson | safe }};
-            const teamB = {{ team_b | tojson | safe }};
+            const teamA = {{ team_a | tojson }};
+            const teamB = {{ team_b | tojson }};
             const lang = document.getElementById('html-tag').getAttribute('lang') || 'en';
 
             try {
@@ -373,8 +468,27 @@
             }
         }
 
+        function animateCounter() {
+            const el = document.querySelector('.confidence-num');
+            if (!el) return;
+            const target = parseFloat(el.getAttribute('data-target'));
+            const duration = 1200;
+            const start = performance.now();
+
+            function update(now) {
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = (eased * target).toFixed(1);
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+
         async function init() {
             await loadTranslations();
+            setInitialLang();
+            animateCounter();
         }
 
         init();

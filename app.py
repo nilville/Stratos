@@ -1,21 +1,23 @@
 import os
+import threading
 from concurrent.futures import ThreadPoolExecutor
 
 from cachetools import TTLCache
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
 
-load_dotenv()
-
+from services.ai_analyzer import AIAnalyzer
 from services.analyzer import Analyzer
 from services.api_client import APIClient
-from services.ai_analyzer import AIAnalyzer
+
+load_dotenv()
 
 LEAGUES = ["PL", "PD", "BL1", "SA", "FL1", "DED"]
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", os.urandom(24).hex())
 cache = TTLCache(maxsize=300, ttl=3600)
+cache_lock = threading.Lock()
 
 
 @app.route("/health")
@@ -25,8 +27,9 @@ def health():
 
 @app.route("/api/teams")
 def api_teams():
-    if "teams_by_league" in cache:
-        return jsonify(cache["teams_by_league"])
+    with cache_lock:
+        if "teams_by_league" in cache:
+            return jsonify(cache["teams_by_league"])
 
     client = APIClient()
     teams_by_league = {}
@@ -35,7 +38,8 @@ def api_teams():
         results = executor.map(client.get_league_teams, LEAGUES)
         teams_by_league = dict(zip(LEAGUES, list(results)))
 
-    cache["teams_by_league"] = teams_by_league
+    with cache_lock:
+        cache["teams_by_league"] = teams_by_league
     return jsonify(teams_by_league)
 
 
@@ -55,10 +59,14 @@ def analyze():
     if not team_a_name or not team_b_name:
         return render_template("index.html", error="Please provide both team names.")
 
+    if league_a not in LEAGUES or league_b not in LEAGUES:
+        return render_template("index.html", error="Invalid league selection.")
+
     cache_key = f"{team_a_name.lower()}_{league_a}_{team_b_name.lower()}_{league_b}"
 
-    if cache_key in cache:
-        return render_template("results.html", **cache[cache_key], lang=lang)
+    with cache_lock:
+        if cache_key in cache:
+            return render_template("results.html", **cache[cache_key], lang=lang)
 
     client = APIClient()
 
@@ -96,12 +104,13 @@ def analyze():
             "league_b": league_b,
         }
 
-        cache[cache_key] = render_data
+        with cache_lock:
+            cache[cache_key] = render_data
         return render_template("results.html", **render_data, lang=lang)
 
     except Exception as e:
         app.logger.exception("Analysis failed")
-        return render_template("index.html", error=f"An error occurred: {str(e)}")
+        return render_template("index.html", error="An error occurred during analysis. Please try again.")
 
 
 @app.route("/api/ai_analyze", methods=["POST"])

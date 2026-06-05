@@ -70,7 +70,12 @@ class APIClient:
 
         for team in result["data"].get("teams", []):
             if self.is_match(team_name, team):
-                return {"status": "ok", "id": team["id"], "name": team["name"]}
+                return {
+                    "status": "ok",
+                    "id": team["id"],
+                    "name": team["name"],
+                    "crest": team.get("crest", ""),
+                }
 
         return {"status": "error", "error_code": "NOT_FOUND"}
 
@@ -94,7 +99,14 @@ class APIClient:
             return []
         teams = result["data"].get("teams", [])
         return sorted(
-            [{"name": t["name"], "shortName": t.get("shortName", "")} for t in teams],
+            [
+                {
+                    "name": t["name"],
+                    "shortName": t.get("shortName", ""),
+                    "crest": t.get("crest", ""),
+                }
+                for t in teams
+            ],
             key=lambda t: t["name"],
         )
 
@@ -114,6 +126,7 @@ class APIClient:
             score = f.get("score", {}).get("fullTime", {})
             home_id = f["homeTeam"]["id"]
             is_home = home_id == result["id"]
+            opponent_team = f["awayTeam"] if is_home else f["homeTeam"]
             scored = score.get("home") if is_home else score.get("away")
             conceded = score.get("away") if is_home else score.get("home")
             if scored is None or conceded is None:
@@ -122,9 +135,8 @@ class APIClient:
             processed_matches.append(
                 {
                     "date": f["utcDate"],
-                    "opponent": f["awayTeam"]["name"]
-                    if is_home
-                    else f["homeTeam"]["name"],
+                    "opponent": opponent_team["name"],
+                    "opponent_crest": opponent_team.get("crest", ""),
                     "is_home": is_home,
                     "scored": scored,
                     "conceded": conceded,
@@ -135,4 +147,8 @@ class APIClient:
                     "btts": scored > 0 and conceded > 0,
                 }
             )
-        return {"team_name": result["name"], "matches": processed_matches}
+        return {
+            "team_name": result["name"],
+            "crest": result.get("crest", ""),
+            "matches": processed_matches,
+        }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Match Insights | Football Analytics</title>
+    <meta name="description" content="Advanced football match simulation engine. Analyze team stats, get data-driven predictions, and AI-generated insights for top European leagues.">
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Lexend:wght@300;500;700&family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -41,59 +42,11 @@
         
         .team-box { display: flex; flex-direction: column; }
 
-        input {
-            background: var(--input-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            padding: 16px 18px;
-            color: #fff;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px var(--accent-glow);
-            background: #1c1c21;
-        }
-
         .league-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 6px;
             margin-top: 10px;
-        }
-
-        .league-btn {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            padding: 6px 4px;
-            color: var(--text-dim);
-            font-size: 9px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            text-align: center;
-        }
-
-        .league-btn:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
-        }
-
-        .league-btn.active {
-            background: rgba(46, 204, 113, 0.1);
-            border-color: var(--accent);
-            color: var(--accent);
-            box-shadow: 0 0 12px var(--accent-glow);
         }
 
         .league-btn .icon {
@@ -107,22 +60,6 @@
             max-width: 100%;
         }
 
-        .btn-analyze {
-            width: 100%;
-            background: var(--accent);
-            color: #000;
-            border: none;
-            border-radius: 16px;
-            padding: 18px;
-            font-size: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            text-transform: uppercase;
-        }
-
-        .btn-analyze:hover { transform: translateY(-3px); box-shadow: 0 15px 30px -5px var(--accent-glow); }
-        
         .error-card {
             background: rgba(255, 77, 77, 0.08);
             border: 1px solid rgba(255, 77, 77, 0.2);
@@ -146,11 +83,8 @@
             .search-container { padding: 28px 20px; }
             .input-pair { gap: 28px; margin-bottom: 32px; }
             .field-label { font-size: 9px; letter-spacing: 1.5px; margin-bottom: 10px; }
-            input { padding: 16px 18px; font-size: 14px; border-radius: 12px; }
             .league-grid { gap: 6px; margin-top: 12px; }
-            .league-btn { padding: 8px 4px; font-size: 8px; border-radius: 8px; gap: 2px; }
             .league-btn .icon { font-size: 16px; }
-            .btn-analyze { padding: 18px; font-size: 14px; border-radius: 14px; margin-top: 8px; }
             .error-card { padding: 14px; font-size: 12px; margin-bottom: 20px; border-radius: 12px; }
             #loader { margin-top: 20px; font-size: 10px; }
         }
@@ -255,6 +189,39 @@
                 <span class="spinner"></span>
                 <span data-i18n="loader" id="txt-loader">Processing match variables...</span>
             </div>
+        </div>
+
+        <div class="how-section">
+            <h2 data-i18n="how_title">How It Works</h2>
+            <div class="how-grid">
+                <div class="how-step">
+                    <span class="step-num" data-i18n="step1_label">Step 01</span>
+                    <span class="icon">🔍</span>
+                    <h3 data-i18n="step1_title">Select Matchup</h3>
+                    <p data-i18n="step1_desc">Pick two teams and their leagues from the top European competitions.</p>
+                </div>
+                <div class="how-step">
+                    <span class="step-num" data-i18n="step2_label">Step 02</span>
+                    <span class="icon">📊</span>
+                    <h3 data-i18n="step2_title">Algorithmic Analysis</h3>
+                    <p data-i18n="step2_desc">We process 10+ match variables across recent fixtures to build statistical profiles.</p>
+                </div>
+                <div class="how-step">
+                    <span class="step-num" data-i18n="step3_label">Step 03</span>
+                    <span class="icon">⚡</span>
+                    <h3 data-i18n="step3_title">Get Insights</h3>
+                    <p data-i18n="step3_desc">Receive a data-driven prediction with probability score and optional AI-generated analysis.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-badges">
+            <span class="tech-badge">Flask</span>
+            <span class="tech-badge">Python</span>
+            <span class="tech-badge">Football-Data API</span>
+            <span class="tech-badge">OpenRouter AI</span>
+            <span class="tech-badge">RTL Support</span>
+            <span class="tech-badge">Glassmorphism</span>
         </div>
 
         <div class="footer">
