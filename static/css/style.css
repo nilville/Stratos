@@ -87,7 +87,7 @@ body::after {
     transition: all 0.3s ease;
     line-height: 1;
 }
-.lang-toggle:hover { border-color: var(--accent); color: var(--accent); transform: scale(1.05); }
+.lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
 [dir="rtl"] .lang-toggle { right: auto; left: 16px; }
 
 .glass-panel {
@@ -98,10 +98,7 @@ body::after {
     box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.glass-panel:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 35px 70px -12px rgba(0, 0, 0, 0.7);
-}
+
 
 .res-indicator {
     width: 8px;
@@ -162,9 +159,7 @@ body::after {
     filter: drop-shadow(0 2px 8px rgba(255,255,255,0.1));
     transition: transform 0.3s ease;
 }
-.team-crest:hover {
-    transform: scale(1.15);
-}
+
 .team-crest-sm {
     width: 30px;
     height: 30px;
@@ -215,7 +210,6 @@ body::after {
     transition: transform 0.2s ease;
 }
 .form-dot:hover {
-    transform: scale(1.2);
     cursor: default;
 }
 .form-W {
@@ -355,20 +349,26 @@ body::after {
     gap: 20px;
 }
 .how-step {
-    padding: 20px 16px;
+    padding: 28px 20px;
     border-radius: 16px;
     background: var(--glass);
     border: 1px solid var(--glass-border);
     transition: all 0.3s ease;
+    text-align: center;
 }
 .how-step:hover {
     border-color: rgba(46, 204, 113, 0.2);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px -8px rgba(0,0,0,0.5);
 }
 .how-step .icon {
-    font-size: 28px;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--accent);
+}
+.how-step .icon svg {
+    width: 36px;
+    height: 36px;
     display: block;
 }
 .how-step .step-num {
@@ -391,33 +391,6 @@ body::after {
     color: var(--text-dim);
     margin: 0;
     line-height: 1.5;
-}
-
-/* ====== TECH BADGES ====== */
-.tech-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    margin-top: 16px;
-}
-.tech-badge {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    padding: 5px 12px;
-    border-radius: 20px;
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    color: var(--text-dim);
-    transition: all 0.3s ease;
-}
-.tech-badge:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-    background: rgba(46, 204, 113, 0.05);
-    transform: translateY(-2px);
 }
 
 /* ====== MICRO-INTERACTIONS ====== */
@@ -459,7 +432,6 @@ input:focus {
 .league-btn:hover {
     border-color: rgba(255, 255, 255, 0.2);
     color: #fff;
-    transform: translateY(-1px);
 }
 .league-btn.active {
     background: rgba(46, 204, 113, 0.1);
@@ -484,13 +456,10 @@ input:focus {
     overflow: hidden;
 }
 .btn-analyze:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px -5px var(--accent-glow-strong);
-    filter: brightness(1.1);
+    background: rgba(46, 204, 113, 0.85);
+    color: #000;
 }
-.btn-analyze:active {
-    transform: translateY(-1px);
-}
+
 
 @media (max-width: 480px) {
     .lang-toggle {
@@ -546,10 +515,6 @@ input:focus {
     .prediction-card .bet-value { font-size: 28px; letter-spacing: -0.5px; }
     .prediction-card .confidence { margin-top: 16px; font-size: 14px; letter-spacing: 0.5px; }
 
-    .tech-badge {
-        font-size: 9px;
-        padding: 4px 10px;
-    }
 }
 
 .footer {

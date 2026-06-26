@@ -104,7 +104,7 @@
         <div class="search-container glass-panel">
             <div id="error-box" class="error-card" style="display: {% if error_code or error %}block{% else %}none{% endif %};">
                 <span id="txt-error-msg">
-                    {% if error_code == 'NOT_FOUND' %}Team '{{ error_team }}' not found.{% elif error_code == 'RATE_LIMIT' %}Limit hit. Wait 60s.{% else %}{{ error }}{% endif %}
+                    {% if error_code == 'NOT_FOUND' %}Team '{{ error_team }}' not found. Check the league selection or try a different name.{% elif error_code == 'NO_MATCHES' %}Team '{{ error_team }}' found but no recent match data available. Try another team or league.{% elif error_code == 'RATE_LIMIT' %}API rate limit reached. Please wait 60 seconds and try again.{% else %}{{ error }}{% endif %}
                 </span>
             </div>
 
@@ -196,32 +196,23 @@
             <div class="how-grid">
                 <div class="how-step">
                     <span class="step-num" data-i18n="step1_label">Step 01</span>
-                    <span class="icon">🔍</span>
+                    <span class="icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
                     <h3 data-i18n="step1_title">Select Matchup</h3>
                     <p data-i18n="step1_desc">Pick two teams and their leagues from the top European competitions.</p>
                 </div>
                 <div class="how-step">
                     <span class="step-num" data-i18n="step2_label">Step 02</span>
-                    <span class="icon">📊</span>
+                    <span class="icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></span>
                     <h3 data-i18n="step2_title">Algorithmic Analysis</h3>
                     <p data-i18n="step2_desc">We process 10+ match variables across recent fixtures to build statistical profiles.</p>
                 </div>
                 <div class="how-step">
                     <span class="step-num" data-i18n="step3_label">Step 03</span>
-                    <span class="icon">⚡</span>
+                    <span class="icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
                     <h3 data-i18n="step3_title">Get Insights</h3>
                     <p data-i18n="step3_desc">Receive a data-driven prediction with probability score and optional AI-generated analysis.</p>
                 </div>
             </div>
-        </div>
-
-        <div class="tech-badges">
-            <span class="tech-badge">Flask</span>
-            <span class="tech-badge">Python</span>
-            <span class="tech-badge">Football-Data API</span>
-            <span class="tech-badge">OpenRouter AI</span>
-            <span class="tech-badge">RTL Support</span>
-            <span class="tech-badge">Glassmorphism</span>
         </div>
 
         <div class="footer">

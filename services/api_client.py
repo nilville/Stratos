@@ -85,7 +85,7 @@ class APIClient:
             params={"status": "FINISHED", "limit": last},
         )
         if result["status"] != "ok":
-            return []
+            return None
 
         matches = result["data"].get("matches", [])
         matches.sort(key=lambda x: x["utcDate"], reverse=True)
@@ -101,8 +101,10 @@ class APIClient:
         return sorted(
             [
                 {
+                    "id": t["id"],
                     "name": t["name"],
                     "shortName": t.get("shortName", ""),
+                    "tla": t.get("tla", ""),
                     "crest": t.get("crest", ""),
                 }
                 for t in teams
@@ -110,14 +112,30 @@ class APIClient:
             key=lambda t: t["name"],
         )
 
-    def get_match_data(self, team_name, league_code):
-        result = self.get_team_id(team_name, league_code)
+    def get_team_id_from_list(self, team_name, teams_data):
+        for team in teams_data:
+            if self.is_match(team_name, team):
+                return {
+                    "status": "ok",
+                    "id": team["id"],
+                    "name": team["name"],
+                    "crest": team.get("crest", ""),
+                }
+        return {"status": "error", "error_code": "NOT_FOUND"}
+
+    def get_match_data(self, team_name, league_code, teams_data=None):
+        if teams_data:
+            result = self.get_team_id_from_list(team_name, teams_data)
+        else:
+            result = self.get_team_id(team_name, league_code)
 
         if result["status"] != "ok":
             return {"error": result["error_code"], "team": team_name}
 
         fixtures = self.get_last_matches(result["id"])
 
+        if fixtures is None:
+            return {"error": "NO_MATCHES", "team": result["name"]}
         if not fixtures:
             return {"error": "NO_MATCHES", "team": result["name"]}
 

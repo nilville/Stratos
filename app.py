@@ -70,10 +70,26 @@ def analyze():
 
     client = APIClient()
 
+    with cache_lock:
+        teams_by_league = cache.get("teams_by_league", None)
+
+    def fetch_team_data(team_name, league, teams_list):
+        team_cache_key = f"team_data_{team_name.lower()}_{league}"
+        with cache_lock:
+            if team_cache_key in cache:
+                return cache[team_cache_key]
+        result = client.get_match_data(team_name, league, teams_list)
+        if "error" not in result:
+            with cache_lock:
+                cache[team_cache_key] = result
+        return result
+
     try:
         with ThreadPoolExecutor(max_workers=2) as executor:
-            future_a = executor.submit(client.get_match_data, team_a_name, league_a)
-            future_b = executor.submit(client.get_match_data, team_b_name, league_b)
+            team_a_teams = teams_by_league.get(league_a) if teams_by_league else None
+            team_b_teams = teams_by_league.get(league_b) if teams_by_league else None
+            future_a = executor.submit(fetch_team_data, team_a_name, league_a, team_a_teams)
+            future_b = executor.submit(fetch_team_data, team_b_name, league_b, team_b_teams)
 
             team_a_result = future_a.result()
             if "error" in team_a_result:
